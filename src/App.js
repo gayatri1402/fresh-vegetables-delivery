@@ -1,24 +1,38 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Navbar from './components/Navbar';
+import Footer from './components/Footer';
+import Home from './pages/Home';
+import Shop from './pages/Shop';
+import CartPage from './pages/CartPage';
 
 function App() {
+  const [cartItems, setCartItems] = useState([]);
+
+  const addToCart = (product) => {
+    setCartItems([...cartItems, { ...product, quantity: 1 }]);
+  };
+
+  const updateQuantity = (id, quantity) => {
+    setCartItems(cartItems.map(item => 
+      item.id === id ? { ...item, quantity: Number(quantity) } : item
+    ));
+  };
+
+  const removeItem = (id) => {
+    setCartItems(cartItems.filter(item => item.id !== id));
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/shop" element={<Shop addToCart={addToCart} />} />
+        <Route path="/cart" element={<CartPage cartItems={cartItems} updateQuantity={updateQuantity} removeItem={removeItem} />} />
+      </Routes>
+      <Footer />
+    </Router>
   );
 }
 
